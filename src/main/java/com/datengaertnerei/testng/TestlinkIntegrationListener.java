@@ -37,7 +37,9 @@ public class TestlinkIntegrationListener implements ITestListener {
     }
     TestlinkStep step = createTestStep(result);
     step.setStatus(TestStatus.PASSED);
-    getTestCase(result.getInstanceName()).setStatus(ExecutionStatus.PASSED);
+    testCases
+        .computeIfAbsent(result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()))
+        .setStatus(ExecutionStatus.PASSED);
   }
 
   @Override
@@ -48,7 +50,9 @@ public class TestlinkIntegrationListener implements ITestListener {
     TestlinkStep step = createTestStep(result);
     step.setStatus(TestStatus.FAILED);
     step.setStackTrace(ExceptionUtils.getFullStackTrace(result.getThrowable()));
-    getTestCase(result.getInstanceName()).setStatus(ExecutionStatus.FAILED);
+    testCases
+        .computeIfAbsent(result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()))
+        .setStatus(ExecutionStatus.FAILED);
   }
 
   @Override
@@ -68,7 +72,9 @@ public class TestlinkIntegrationListener implements ITestListener {
     TestlinkStep step = createTestStep(result);
     step.setStatus(TestStatus.FAILED);
     step.setStackTrace(ExceptionUtils.getFullStackTrace(result.getThrowable()));
-    getTestCase(result.getInstanceName()).setStatus(ExecutionStatus.PASSED);
+    testCases
+        .computeIfAbsent(result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()))
+        .setStatus(ExecutionStatus.PASSED);
   }
 
   @Override
@@ -151,15 +157,6 @@ public class TestlinkIntegrationListener implements ITestListener {
         .append(tlStep.getStackTrace());
   }
 
-  private TestlinkCase getTestCase(String instanceName) {
-    TestlinkCase result = testCases.get(instanceName);
-    if (null == result) {
-      result = new TestlinkCase(instanceName);
-      testCases.put(instanceName, result);
-    }
-    return result;
-  }
-
   private String printParameters(Object[] parameters) {
     StringBuilder result = new StringBuilder();
     if (parameters.length > 0) {
@@ -175,7 +172,9 @@ public class TestlinkIntegrationListener implements ITestListener {
   }
 
   private TestlinkStep createTestStep(ITestResult result) {
-    TestlinkCase testCase = getTestCase(result.getInstanceName());
+    TestlinkCase testCase =
+        testCases.computeIfAbsent(
+            result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()));
     TestlinkStep step =
         new TestlinkStep(
             result.getMethod().getMethodName(), printParameters(result.getParameters()));

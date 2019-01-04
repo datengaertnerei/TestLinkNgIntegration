@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="TestLinkIntegrationTestSuite" verbose="10">
+	<test name="TestLinkIntegrationTestContext">
+		<classes>
+			<class name="com.datengaertnerei.testng.TestLinkTest" />
+		</classes>
+	</test>
+</suite>

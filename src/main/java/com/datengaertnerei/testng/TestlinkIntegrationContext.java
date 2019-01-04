@@ -111,10 +111,11 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * Provides an existing or newly created execution plan.
+   * Provides an existing or newly created execution plan. There will be only one execution plan
+   * with the constant name TestNGAutomation.
    *
-   * @param project
-   * @return
+   * @param project the TestLink project for the plan
+   * @return the execution plan
    */
   private TestPlan getPlan(TestProject project) {
     checkConnection();
@@ -132,9 +133,9 @@ public class TestlinkIntegrationContext {
   /**
    * Provides an existing or newly created build for test execution.
    *
-   * @param plan
-   * @param buildName
-   * @return
+   * @param plan the TestLink execution plan for the build
+   * @param buildName the name for the new build, usually the Maven version
+   * @return the build
    */
   public Build getBuild(TestPlan plan, String buildName) {
     checkConnection();
@@ -155,9 +156,11 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param project
-   * @param suiteName
-   * @return
+   * Provides a TestLink suite for the given name.
+   * 
+   * @param project the TestLink project
+   * @param suiteName the name of the test suite (usually from testng.xml)
+   * @return the TestLink test suite
    */
   public TestSuite getSuite(TestProject project, String suiteName) {
     checkConnection();
@@ -187,26 +190,11 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param suite
-   * @return
-   */
-  public List<TestCase> getTestCases(TestSuite suite) {
-    checkConnection();
-    try {
-      TestCase[] casesArray = remoteApi.getTestCasesForTestSuite(suite.getId(), false, null);
-      if (null != casesArray) {
-        return Arrays.asList(casesArray);
-      }
-    } catch (TestLinkAPIException notFoundException) {
-      checkApiExceptionNotFound(notFoundException);
-    }
-    return new ArrayList<>();
-  }
-
-  /**
-   * @param plan
-   * @param build
-   * @return
+   * Fetches all TestLink test cases for plan/build combination.
+   * 
+   * @param plan the execution plan
+   * @param build the build, usually the Maven version
+   * @return a list of TestCase objects from TestLink
    */
   public List<TestCase> getTestCases(TestPlan plan, Build build) {
     checkConnection();
@@ -225,11 +213,13 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param caseName
-   * @param suite
-   * @param project
-   * @param steps
-   * @return
+   * Creates a new TestLink test case.
+   * 
+   * @param caseName the name of the test case
+   * @param suite the TestLink test suite
+   * @param project the TestLink project
+   * @param steps the list of test steps
+   * @return the new TestLink testcase
    */
   public TestCase createTestCase(
       String caseName, TestSuite suite, TestProject project, List<TestCaseStep> steps) {
@@ -268,9 +258,11 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param steps
-   * @param existingSteps
-   * @return
+   * Compares test steps of test cases to determine if a new version is needed.
+   * 
+   * @param steps list of current steps
+   * @param existingSteps list of previously created steps
+   * @return true if both lists contain the same steps.
    */
   private boolean compareSteps(List<TestCaseStep> steps, List<TestCaseStep> existingSteps) {
     if (existingSteps.size() != steps.size()) {
@@ -291,10 +283,12 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param testCase
-   * @param plan
-   * @param build
-   * @param project
+   * Adds a test case to an execution plan in TestLink. 
+   * 
+   * @param testCase the TestLink test case
+   * @param plan the TestLink execution plan
+   * @param build the TestLink build
+   * @param project the TestLink project
    */
   public void addTestCaseToPlan(
       TestCase testCase, TestPlan plan, Build build, TestProject project) {
@@ -311,13 +305,15 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param testCase
-   * @param plan
-   * @param build
-   * @param status
-   * @param notes
-   * @param stepResults
-   * @return
+   * Wraps reportTestCaseResult and returns just the execution id.
+   * 
+   * @param testCase the TestLink test case
+   * @param plan the TestLink execution plan
+   * @param build the TestLink build
+   * @param status the ExecutionStatus (passed, failed etc.)
+   * @param notes the test execution protocol
+   * @param stepResults the detailed results of each test step
+   * @return the execution id (for additional uploads)
    */
   public Integer setTestResult(
       TestCase testCase,
@@ -335,12 +331,14 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * @param testCaseId
-   * @param testPlanId
-   * @param status
-   * @param buildId
-   * @param notes
-   * @param steps
+   * Saves test case execution result and protocol to TestLink.
+   * 
+   * @param testCaseId the TestLink test case id
+   * @param testPlanId the TestLink execution plan id
+   * @param status  the ExecutionStatus (passed, failed etc.)
+   * @param buildId the TestLink build id
+   * @param notes the test execution protocol
+   * @param steps the detailed results of each test step
    * @return
    */
   private ReportTCResultResponse reportTestCaseResult(
@@ -401,7 +399,7 @@ public class TestlinkIntegrationContext {
    * Workaround to identify "... does not exist|no ... exists" exception from other TestLink API
    * exceptions.
    *
-   * @param notFoundException
+   * @param notFoundException the exception not related to missing objects
    */
   private void checkApiExceptionNotFound(TestLinkAPIException notFoundException) {
     if (!notFoundException.getMessage().contains(EXIST)) {
