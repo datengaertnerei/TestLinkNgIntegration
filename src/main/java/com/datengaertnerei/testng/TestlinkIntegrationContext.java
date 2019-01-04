@@ -269,10 +269,8 @@ public class TestlinkIntegrationContext {
       return false;
     }
     Set<String> actions = new HashSet<>();
-    for (TestCaseStep step : existingSteps) {
-      actions.add(step.getActions());
-    }
-    for (TestCaseStep step : steps) {
+    existingSteps.forEach(step -> actions.add(step.getActions()));
+    for (TestCaseStep step : steps) { // no lambda removeIf here because of "else return false"
       if (actions.contains(step.getActions())) {
         actions.remove(step.getActions());
       } else {
