@@ -1,6 +1,7 @@
 package com.datengaertnerei.testng;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TestlinkCase {
@@ -12,6 +13,7 @@ public class TestlinkCase {
 
   public TestlinkCase(String testCaseName) {
     this.testCaseName = testCaseName;
+    this.steps = new LinkedList<>();
   }
 
   public String getTestCaseName() {

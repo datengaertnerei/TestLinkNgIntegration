@@ -84,6 +84,7 @@ public class TestlinkIntegrationListener implements ITestListener {
     // init TestLink context and project
     tlContext = TestlinkIntegrationContext.getInstance();
     tlProject = tlContext.getProject(projectName);
+    tlProject.setBuild(tlContext.getBuild(tlProject.getPlan(), buildName));
 
     testCases = new ConcurrentHashMap<>();
 
@@ -105,8 +106,10 @@ public class TestlinkIntegrationListener implements ITestListener {
       List<TestCaseStep> steps = new ArrayList<>();
       StringBuilder testCaseExecutionProtocol = new StringBuilder();
       fillTestStepExecutionProtocol(tlCase, testCaseExecutionProtocol);
+      int number = 0;
       for (TestlinkStep tlStep : tlCase.getSteps()) {
         TestCaseStep step = createTestCaseStep(tlStep);
+        step.setNumber(number++);
         steps.add(step);
         fillTestStepExecutionProtocol(testCaseExecutionProtocol, tlStep);
       }

@@ -30,18 +30,8 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
+				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M3</version>
-				<executions>
-					<execution>
-						<id>run-tests</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
 				<configuration>
 					<property>
 						<name>surefire.testng.verbose</name>
@@ -52,21 +42,11 @@
 						<TestlinkIntegrationListener.Project>${project.groupId}.${project.artifactId}</TestlinkIntegrationListener.Project>
 						<TestlinkIntegrationContext.RemoteURL>http://192.168.0.131:80/lib/api/xmlrpc/v1/xmlrpc.php</TestlinkIntegrationContext.RemoteURL>
 						<TestlinkIntegrationContext.APIKey>783ac3ba3370744f9704416092c2f345</TestlinkIntegrationContext.APIKey>
+						<TestlinkIntegrationContext.AutomationUser>user</TestlinkIntegrationContext.AutomationUser>
 					</systemPropertyVariables>
 					<suiteXmlFiles>
 						<suiteXmlFile>testng.xml</suiteXmlFile>
 					</suiteXmlFiles>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M3</version>
-				<configuration>
-					<excludes>
-						<exclude>
-							**/ITest.java</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
