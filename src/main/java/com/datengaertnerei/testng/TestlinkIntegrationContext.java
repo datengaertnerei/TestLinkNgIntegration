@@ -16,6 +16,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import br.eti.kinoshita.testlinkjavaapi.util.TestLinkAPIException;
 import br.eti.kinoshita.testlinkjavaapi.util.Util;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import javax.xml.soap.AttachmentPart;
+import javax.xml.soap.SOAPException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlrpc.XmlRpcException;
@@ -157,7 +162,7 @@ public class TestlinkIntegrationContext {
 
   /**
    * Provides a TestLink suite for the given name.
-   * 
+   *
    * @param project the TestLink project
    * @param suiteName the name of the test suite (usually from testng.xml)
    * @return the TestLink test suite
@@ -191,7 +196,7 @@ public class TestlinkIntegrationContext {
 
   /**
    * Fetches all TestLink test cases for plan/build combination.
-   * 
+   *
    * @param plan the execution plan
    * @param build the build, usually the Maven version
    * @return a list of TestCase objects from TestLink
@@ -214,7 +219,7 @@ public class TestlinkIntegrationContext {
 
   /**
    * Creates a new TestLink test case.
-   * 
+   *
    * @param caseName the name of the test case
    * @param suite the TestLink test suite
    * @param project the TestLink project
@@ -259,7 +264,7 @@ public class TestlinkIntegrationContext {
 
   /**
    * Compares test steps of test cases to determine if a new version is needed.
-   * 
+   *
    * @param steps list of current steps
    * @param existingSteps list of previously created steps
    * @return true if both lists contain the same steps.
@@ -281,8 +286,8 @@ public class TestlinkIntegrationContext {
   }
 
   /**
-   * Adds a test case to an execution plan in TestLink. 
-   * 
+   * Adds a test case to an execution plan in TestLink.
+   *
    * @param testCase the TestLink test case
    * @param plan the TestLink execution plan
    * @param build the TestLink build
@@ -303,8 +308,32 @@ public class TestlinkIntegrationContext {
   }
 
   /**
+   * Saves file attachment to existing test execution.
+   *
+   * @param executionId identifier for existing test execution
+   * @param attachment the file attachment
+   */
+  public void saveAttachment(Integer executionId, AttachmentPart attachment) {
+    try {
+      String content =
+          new BufferedReader(new InputStreamReader(attachment.getBase64Content()))
+              .lines()
+              .collect(Collectors.joining("\n"));
+      remoteApi.uploadExecutionAttachment(
+          executionId,
+          attachment.getContentId(),
+          CREATED_BY_TLNGI,
+          attachment.getContentLocation(),
+          attachment.getContentType(),
+          content);
+    } catch (SOAPException transferException) {
+      log.error("Could not save attachment.", transferException);
+    }
+  }
+
+  /**
    * Wraps reportTestCaseResult and returns just the execution id.
-   * 
+   *
    * @param testCase the TestLink test case
    * @param plan the TestLink execution plan
    * @param build the TestLink build
@@ -330,10 +359,10 @@ public class TestlinkIntegrationContext {
 
   /**
    * Saves test case execution result and protocol to TestLink.
-   * 
+   *
    * @param testCaseId the TestLink test case id
    * @param testPlanId the TestLink execution plan id
-   * @param status  the ExecutionStatus (passed, failed etc.)
+   * @param status the ExecutionStatus (passed, failed etc.)
    * @param buildId the TestLink build id
    * @param notes the test execution protocol
    * @param steps the detailed results of each test step

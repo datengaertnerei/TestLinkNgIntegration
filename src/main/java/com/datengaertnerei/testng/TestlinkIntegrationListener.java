@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.xml.soap.AttachmentPart;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,6 +25,7 @@ public class TestlinkIntegrationListener implements ITestListener {
   private TestlinkIntegrationContext tlContext;
   private TestlinkProject tlProject;
   private Map<String, TestlinkCase> testCases;
+  private Map<String, AttachmentPart> attachments;
 
   @Override
   public void onTestStart(ITestResult result) {
@@ -40,6 +42,8 @@ public class TestlinkIntegrationListener implements ITestListener {
     testCases
         .computeIfAbsent(result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()))
         .setStatus(ExecutionStatus.PASSED);
+
+    transferAttachments(result);
   }
 
   @Override
@@ -53,6 +57,18 @@ public class TestlinkIntegrationListener implements ITestListener {
     testCases
         .computeIfAbsent(result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()))
         .setStatus(ExecutionStatus.FAILED);
+
+    transferAttachments(result);
+  }
+
+  private void transferAttachments(ITestResult result) {
+    if (result.getInstance() instanceof ContainsAttachmentsTestCase) {
+      ContainsAttachmentsTestCase attachmentContainer =
+          (ContainsAttachmentsTestCase) result.getInstance();
+      List<AttachmentPart> attachmentList =
+          attachmentContainer.getAttachments(result.getMethod().getMethodName());
+      attachmentList.forEach(attachment -> attachments.put(attachment.getContentId(), attachment));
+    }
   }
 
   @Override
@@ -75,6 +91,8 @@ public class TestlinkIntegrationListener implements ITestListener {
     testCases
         .computeIfAbsent(result.getInstanceName(), t -> new TestlinkCase(result.getInstanceName()))
         .setStatus(ExecutionStatus.PASSED);
+
+    transferAttachments(result);
   }
 
   @Override
@@ -93,6 +111,7 @@ public class TestlinkIntegrationListener implements ITestListener {
     tlProject.setBuild(tlContext.getBuild(tlProject.getPlan(), buildName));
 
     testCases = new ConcurrentHashMap<>();
+    attachments = new ConcurrentHashMap<>();
 
     log.info(
         new StringBuilder("TestlinkIntegrationListener starting for TestSuite ")
@@ -123,13 +142,15 @@ public class TestlinkIntegrationListener implements ITestListener {
           tlContext.createTestCase(tlCase.getTestCaseName(), suite, tlProject.getProject(), steps);
       tlContext.addTestCaseToPlan(
           testCase, tlProject.getPlan(), tlProject.getBuild(), tlProject.getProject());
-      tlContext.setTestResult(
-          testCase,
-          tlProject.getPlan(),
-          tlProject.getBuild(),
-          tlCase.getStatus(),
-          testCaseExecutionProtocol.toString(),
-          null);
+      Integer executionId =
+          tlContext.setTestResult(
+              testCase,
+              tlProject.getPlan(),
+              tlProject.getBuild(),
+              tlCase.getStatus(),
+              testCaseExecutionProtocol.toString(),
+              null);
+      attachments.values().forEach(attachment -> tlContext.saveAttachment(executionId, attachment));
     }
   }
 
