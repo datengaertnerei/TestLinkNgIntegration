@@ -20,7 +20,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -147,6 +146,12 @@ public class TestlinkIntegrationContext {
     return plan;
   }
 
+  /**
+   * Create a new test plan for TestNG automation.
+   *
+   * @param project the TestProject the plan will refer to
+   * @return the new TestPlan object
+   */
   protected TestPlan createPlan(TestProject project) {
     LocalDateTime now = LocalDateTime.now();
     return remoteApi.createTestPlan(

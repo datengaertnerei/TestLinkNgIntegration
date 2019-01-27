@@ -153,7 +153,7 @@ public class TestlinkIntegrationListener implements ITestListener {
         steps.add(step);
         fillTestStepExecutionProtocol(testCaseExecutionProtocol, tlStep);
       }
-      
+
       TestCase testCase =
           tlContext.createTestCase(tlCase.getTestCaseName(), suite, tlProject.getProject(), steps);
       testLinkCases.add(testCase);
@@ -165,11 +165,11 @@ public class TestlinkIntegrationListener implements ITestListener {
         }
       }
     }
-    
+
     // it is not possible to change the existing testcase in the plan, so we create a new plan
-    if(newPlan) {
-    	tlProject.setPlan(tlContext.createPlan(tlProject.getProject()));
-    	tlProject.setBuild(tlContext.getBuild(tlProject.getPlan(), tlProject.getBuild().getName()));
+    if (newPlan) {
+      tlProject.setPlan(tlContext.createPlan(tlProject.getProject()));
+      tlProject.setBuild(tlContext.getBuild(tlProject.getPlan(), tlProject.getBuild().getName()));
     }
 
     for (TestCase testCase : testLinkCases) {
