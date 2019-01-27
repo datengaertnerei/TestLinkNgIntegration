@@ -8,6 +8,8 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
 import com.datengaertnerei.testng.TestlinkStep.TestStatus;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,7 +69,13 @@ public class TestlinkIntegrationListener implements ITestListener {
           (ContainsAttachmentsTestCase) result.getInstance();
       List<AttachmentPart> attachmentList =
           attachmentContainer.getAttachments(result.getMethod().getMethodName());
-      attachmentList.forEach(attachment -> attachments.put(attachment.getContentId(), attachment));
+      attachmentList.forEach(
+          attachment ->
+              attachments.put(
+                  attachment.getContentId() == null
+                      ? attachment.toString() // workaround if not content id is given
+                      : attachment.getContentId(),
+                  attachment));
     }
   }
 
@@ -126,6 +134,13 @@ public class TestlinkIntegrationListener implements ITestListener {
       return;
     }
     TestSuite suite = tlContext.getSuite(tlProject.getProject(), context.getSuite().getName());
+    List<TestCase> testLinkCases = new LinkedList<>();
+    List<TestCase> existingCases =
+        tlContext.getTestCases(tlProject.getPlan(), tlProject.getBuild());
+    Map<TestCase, ExecutionStatus> statusMap = new HashMap<>();
+    Map<TestCase, String> protocolMap = new HashMap<>();
+
+    boolean newPlan = false;
 
     for (TestlinkCase tlCase : testCases.values()) {
       List<TestCaseStep> steps = new ArrayList<>();
@@ -138,8 +153,26 @@ public class TestlinkIntegrationListener implements ITestListener {
         steps.add(step);
         fillTestStepExecutionProtocol(testCaseExecutionProtocol, tlStep);
       }
+      
       TestCase testCase =
           tlContext.createTestCase(tlCase.getTestCaseName(), suite, tlProject.getProject(), steps);
+      testLinkCases.add(testCase);
+      statusMap.put(testCase, tlCase.getStatus());
+      protocolMap.put(testCase, testCaseExecutionProtocol.toString());
+      for (TestCase tc : existingCases) {
+        if (testCase.getId().equals(tc.getId()) && testCase.getVersion() > tc.getVersion()) {
+          newPlan = true; // new testcase version of already assigned test - new test plan needed
+        }
+      }
+    }
+    
+    // it is not possible to change the existing testcase in the plan, so we create a new plan
+    if(newPlan) {
+    	tlProject.setPlan(tlContext.createPlan(tlProject.getProject()));
+    	tlProject.setBuild(tlContext.getBuild(tlProject.getPlan(), tlProject.getBuild().getName()));
+    }
+
+    for (TestCase testCase : testLinkCases) {
       tlContext.addTestCaseToPlan(
           testCase, tlProject.getPlan(), tlProject.getBuild(), tlProject.getProject());
       Integer executionId =
@@ -147,8 +180,8 @@ public class TestlinkIntegrationListener implements ITestListener {
               testCase,
               tlProject.getPlan(),
               tlProject.getBuild(),
-              tlCase.getStatus(),
-              testCaseExecutionProtocol.toString(),
+              statusMap.get(testCase),
+              protocolMap.get(testCase),
               null);
       attachments.values().forEach(attachment -> tlContext.saveAttachment(executionId, attachment));
     }

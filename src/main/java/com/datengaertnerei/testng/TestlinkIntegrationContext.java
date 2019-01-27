@@ -20,6 +20,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,7 +45,7 @@ import org.apache.xmlrpc.XmlRpcException;
 public class TestlinkIntegrationContext {
 
   private static final String EXIST = "exist";
-  private static final String CONSTANT_NAME = "TestNGAutomation";
+  private static final String CONSTANT_NAME = "TestNGAutomation-";
   private static final String CREATED_BY_TLNGI = "Created by TestLinkNGIntegration.";
   private static final String CFG_REMOTE_URL = "TestlinkIntegrationContext.RemoteURL";
   private static final String CFG_API_KEY = "TestlinkIntegrationContext.APIKey";
@@ -124,15 +127,34 @@ public class TestlinkIntegrationContext {
    */
   private TestPlan getPlan(TestProject project) {
     checkConnection();
-    TestPlan plan;
+    TestPlan plan = null;
     try {
-      plan = remoteApi.getTestPlanByName(CONSTANT_NAME, project.getName());
+      TestPlan[] plans = remoteApi.getProjectTestPlans(project.getId());
+      for (TestPlan existingPlan : plans) {
+        if (existingPlan.getName().startsWith(CONSTANT_NAME)
+            && (plan == null || plan.getId() < existingPlan.getId())) {
+          plan = existingPlan;
+        }
+      }
+
+      if (null == plan) {
+        plan = createPlan(project);
+      }
+
     } catch (TestLinkAPIException notFoundException) {
       checkApiExceptionNotFound(notFoundException);
-      plan =
-          remoteApi.createTestPlan(CONSTANT_NAME, project.getName(), CREATED_BY_TLNGI, true, true);
     }
     return plan;
+  }
+
+  protected TestPlan createPlan(TestProject project) {
+    LocalDateTime now = LocalDateTime.now();
+    return remoteApi.createTestPlan(
+        CONSTANT_NAME + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+        project.getName(),
+        CREATED_BY_TLNGI,
+        true,
+        true);
   }
 
   /**
@@ -298,8 +320,12 @@ public class TestlinkIntegrationContext {
 
     List<TestCase> testCases = getTestCases(plan, build);
     for (TestCase tc : testCases) {
-      if (testCase.getId().equals(tc.getId()) && testCase.getVersion() <= tc.getVersion()) {
-        return;
+      if (testCase.getId().equals(tc.getId())) {
+        if (testCase.getVersion() <= tc.getVersion()) {
+          return;
+        } else {
+          // no removal???
+        }
       }
     }
 
@@ -321,9 +347,11 @@ public class TestlinkIntegrationContext {
               .collect(Collectors.joining("\n"));
       remoteApi.uploadExecutionAttachment(
           executionId,
-          attachment.getContentId(),
+          attachment.getContentId() == null ? attachment.toString() : attachment.getContentId(),
           CREATED_BY_TLNGI,
-          attachment.getContentLocation(),
+          attachment.getContentLocation() == null
+              ? attachment.toString()
+              : attachment.getContentLocation(),
           attachment.getContentType(),
           content);
     } catch (SOAPException transferException) {
