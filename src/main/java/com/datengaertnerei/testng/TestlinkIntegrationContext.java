@@ -52,15 +52,13 @@ public class TestlinkIntegrationContext {
 
   private static Log log = LogFactory.getLog(TestlinkIntegrationContext.class);
   private static TestlinkIntegrationContext singletonInstance;
-  private String apiKey;
-  private String remoteUrl;
   private String automationUser;
   private TestLinkAPI remoteApi;
 
   /** Private ctor initializes singleton instance. */
   private TestlinkIntegrationContext() {
-    apiKey = System.getProperty(CFG_API_KEY);
-    remoteUrl = System.getProperty(CFG_REMOTE_URL);
+    String apiKey = System.getProperty(CFG_API_KEY);
+    String remoteUrl = System.getProperty(CFG_REMOTE_URL);
     automationUser = System.getProperty(CFG_USER);
 
     if (null != apiKey && null != remoteUrl) {
@@ -325,12 +323,8 @@ public class TestlinkIntegrationContext {
 
     List<TestCase> testCases = getTestCases(plan, build);
     for (TestCase tc : testCases) {
-      if (testCase.getId().equals(tc.getId())) {
-        if (testCase.getVersion() <= tc.getVersion()) {
-          return;
-        } else {
-          // no removal???
-        }
+      if (testCase.getId().equals(tc.getId()) && testCase.getVersion() <= tc.getVersion()) {
+        return;
       }
     }
 

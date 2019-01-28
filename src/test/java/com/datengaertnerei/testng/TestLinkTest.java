@@ -17,7 +17,7 @@ import org.testng.annotations.Test;
 
 public class TestLinkTest implements ContainsAttachmentsTestCase {
 
-  List<AttachmentPart> attachments;
+  private List<AttachmentPart> attachments;
   
   @BeforeClass
   public void init() {

@@ -5,9 +5,9 @@ import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
 
 public class TestlinkProject {
-  TestProject project;
-  TestPlan plan;
-  Build build;
+  private TestProject project;
+  private TestPlan plan;
+  private Build build;
 
   public Build getBuild() {
     return build;
