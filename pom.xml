@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.datengaertnerei.test</groupId>
 	<artifactId>testlink-ng-integration</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<name>TestLink integration to TestNG</name>
 	<description>...</description>
 	<url>https://github.com/datengaertnerei/TestLinkNgIntegration</url>
@@ -221,7 +221,7 @@
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
 		</repository>
 	</distributionManagement>
 	<reporting>
