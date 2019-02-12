@@ -6,3 +6,11 @@
 # TestLinkNgIntegration to TestNG
 
 [TestLink](https://github.com/TestLinkOpenSourceTRMS) is an open source web based test management tool. You can now create test suites and test cases automatically from your TestNG runs and save the test results with this integration library.
+
+```
+<dependency>
+  <groupId>com.datengaertnerei.test</groupId>
+  <artifactId>testlink-ng-integration</artifactId>
+  <version>0.1.1</version>
+</dependency>
+```
