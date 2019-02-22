@@ -1,4 +1,4 @@
-package com.datengaertnerei.testng;
+package com.datengaertnerei.test;
 
 import br.eti.kinoshita.testlinkjavaapi.TestLinkAPI;
 import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;

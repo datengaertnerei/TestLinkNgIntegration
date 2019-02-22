@@ -1,4 +1,4 @@
-package com.datengaertnerei.testng;
+package com.datengaertnerei.test;
 
 import java.util.List;
 import javax.xml.soap.AttachmentPart;

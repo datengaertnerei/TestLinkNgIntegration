@@ -1,4 +1,4 @@
-package com.datengaertnerei.testng;
+package com.datengaertnerei.test;
 
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;

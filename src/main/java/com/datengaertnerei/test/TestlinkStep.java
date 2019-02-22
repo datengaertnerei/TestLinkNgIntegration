@@ -1,4 +1,4 @@
-package com.datengaertnerei.testng;
+package com.datengaertnerei.test;
 
 public class TestlinkStep {
   enum TestStatus {

@@ -1,9 +1,12 @@
-package com.datengaertnerei.testng;
+package com.datengaertnerei.test;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.model.Build;
 import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
 import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import com.datengaertnerei.test.ContainsAttachmentsTestCase;
+import com.datengaertnerei.test.TestlinkCase;
+import com.datengaertnerei.test.TestlinkProject;
 import com.sun.xml.messaging.saaj.soap.AttachmentPartImpl;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

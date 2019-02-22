@@ -3,7 +3,7 @@
 <suite name="TestLinkIntegrationTestSuite" verbose="10">
 	<test name="TestLinkIntegrationTestContext">
 		<classes>
-			<class name="com.datengaertnerei.testng.TestLinkTest" />
+			<class name="com.datengaertnerei.test.TestLinkTest" />
 		</classes>
 	</test>
 </suite>

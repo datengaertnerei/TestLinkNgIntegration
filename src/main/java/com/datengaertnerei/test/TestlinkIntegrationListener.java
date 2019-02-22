@@ -1,11 +1,11 @@
-package com.datengaertnerei.testng;
+package com.datengaertnerei.test;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionType;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCase;
 import br.eti.kinoshita.testlinkjavaapi.model.TestCaseStep;
 import br.eti.kinoshita.testlinkjavaapi.model.TestSuite;
-import com.datengaertnerei.testng.TestlinkStep.TestStatus;
+import com.datengaertnerei.test.TestlinkStep.TestStatus;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
