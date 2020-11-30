@@ -1,22 +1,23 @@
 package com.datengaertnerei.test;
 
-import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
-import br.eti.kinoshita.testlinkjavaapi.model.Build;
-import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
-import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
-import com.datengaertnerei.test.ContainsAttachmentsTestCase;
-import com.datengaertnerei.test.TestlinkCase;
-import com.datengaertnerei.test.TestlinkProject;
-import com.sun.xml.messaging.saaj.soap.AttachmentPartImpl;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.imageio.ImageIO;
-import javax.xml.soap.AttachmentPart;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import com.sun.xml.messaging.saaj.soap.AttachmentPartImpl;
+
+import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
+import br.eti.kinoshita.testlinkjavaapi.model.Build;
+import br.eti.kinoshita.testlinkjavaapi.model.TestPlan;
+import br.eti.kinoshita.testlinkjavaapi.model.TestProject;
+import jakarta.xml.soap.AttachmentPart;
 
 public class TestLinkTest implements ContainsAttachmentsTestCase {
 
